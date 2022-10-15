@@ -1,6 +1,7 @@
-#include <crtdbg.h>
+// #include <crtdbg.h>
 #include <iostream>
 
+#include "allocator/block_allocator.h"
 #include "allocator/fixed_block_allocator.h"
 
 int main(int argc, char** argv)
@@ -41,6 +42,14 @@ int main(int argc, char** argv)
     }
 
     std::cout << fba.GetChunkCount() << ", " << fba.GetBlockCount() << std::endl;
+
+    BlockAllocator ba;
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        ba.Allocate(16);
+    }
+    std::cout << ba.GetChunkCount() << ", " << ba.GetBlockCount() << std::endl;
 
     return 0;
 }

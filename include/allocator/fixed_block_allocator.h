@@ -2,17 +2,6 @@
 
 #include "common.h"
 
-struct Block
-{
-    Block* next;
-};
-
-struct Chunk
-{
-    Block* blocks;
-    Chunk* next;
-};
-
 template <size_t blockSize, size_t blockCapacity = 32>
 class FixedBlockAllocator
 {
@@ -27,17 +16,7 @@ public:
 
     ~FixedBlockAllocator()
     {
-        Chunk* chunk = chunks;
-        while (chunk)
-        {
-            Chunk* c0 = chunk;
-            chunk = c0->next;
-            free(c0->blocks);
-            free(c0);
-        }
-
-        chunks = nullptr;
-        freeList = nullptr;
+        Clear();
     }
 
     void* Allocate()
@@ -60,6 +39,7 @@ public:
             last->next = nullptr;
 
             Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+            newChunk->blockSize = blockSize;
             newChunk->blocks = blocks;
             newChunk->next = chunks;
             chunks = newChunk;
@@ -101,6 +81,21 @@ public:
         block->next = freeList;
         freeList = block;
         --blockCount;
+    }
+
+    void Clear()
+    {
+        Chunk* chunk = chunks;
+        while (chunk)
+        {
+            Chunk* c0 = chunk;
+            chunk = c0->next;
+            free(c0->blocks);
+            free(c0);
+        }
+
+        chunks = nullptr;
+        freeList = nullptr;
     }
 
     size_t GetChunkCount() const
