@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(BUILD_UNIT_TESTS "Build unit tests" ON)
+
 project(allocator LANGUAGES CXX VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -20,4 +22,7 @@ if(MSVC)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+if(BUILD_UNIT_TESTS)
+    add_subdirectory(test)
+endif()
