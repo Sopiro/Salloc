@@ -22,6 +22,7 @@ public:
 
     void* Allocate(size_t size);
     void Free(void* p);
+    void Clear();
 
     size_t GetMaxAllocation() const;
 

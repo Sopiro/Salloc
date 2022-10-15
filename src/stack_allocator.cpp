@@ -60,3 +60,11 @@ void StackAllocator::Free(void* p)
 
     p = nullptr;
 }
+
+void StackAllocator::Clear()
+{
+    index = 0;
+    allocation = 0;
+    maxAllocation = 0;
+    entryCount = 0;
+}
