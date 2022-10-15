@@ -2,11 +2,13 @@ set(HEADER_FILES
     ../include/allocator/common.h
     ../include/allocator/stack_allocator.h
     ../include/allocator/fixed_block_allocator.h
+    ../include/allocator/predefined_block_allocator.h
     ../include/allocator/block_allocator.h
 )
 set(SOURCE_FILES
     main.cpp
     stack_allocator.cpp
+    predefined_block_allocator.cpp
     block_allocator.cpp
 )
 

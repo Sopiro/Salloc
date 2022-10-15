@@ -2,15 +2,13 @@
 
 #include "common.h"
 
-constexpr size_t maxBlockSize = 1024;
-constexpr size_t blockUnit = 8;
-constexpr size_t blockSizeCount = maxBlockSize / blockUnit;
+constexpr size_t predefinedBlockSizeCount = 14;
 
-class BlockAllocator
+class PredefinedBlockAllocator
 {
 public:
-    BlockAllocator();
-    ~BlockAllocator();
+    PredefinedBlockAllocator();
+    ~PredefinedBlockAllocator();
 
     void* Allocate(size_t size);
     void Free(void* p, size_t size);
@@ -24,15 +22,15 @@ private:
     size_t chunkCount;
 
     Chunk* chunks;
-    Block* freeList[blockSizeCount];
+    Block* freeList[predefinedBlockSizeCount];
 };
 
-inline size_t BlockAllocator::GetBlockCount() const
+inline size_t PredefinedBlockAllocator::GetBlockCount() const
 {
     return blockCount;
 }
 
-inline size_t BlockAllocator::GetChunkCount() const
+inline size_t PredefinedBlockAllocator::GetChunkCount() const
 {
     return chunkCount;
 }
