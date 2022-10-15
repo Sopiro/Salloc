@@ -24,6 +24,7 @@ public:
     void Free(void* p);
     void Clear();
 
+    size_t GetAllocation() const;
     size_t GetMaxAllocation() const;
 
 private:
@@ -36,6 +37,11 @@ private:
     StackEntry entries[maxStackEntries];
     size_t entryCount;
 };
+
+inline size_t StackAllocator::GetAllocation() const
+{
+    return allocation;
+}
 
 inline size_t StackAllocator::GetMaxAllocation() const
 {
