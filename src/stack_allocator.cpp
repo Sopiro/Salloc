@@ -43,7 +43,7 @@ void StackAllocator::Free(void* p)
 {
     assert(entryCount > 0);
 
-    StackEntry* entry = entries + entryCount;
+    StackEntry* entry = entries + entryCount - 1;
     assert(entry->data == p);
 
     if (entry->mallocUsed)
