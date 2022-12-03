@@ -19,7 +19,7 @@ static constexpr size_t blockSizes[predefinedBlockSizeCount] = {
 };
 
 static constexpr size_t chunkSize = 16 * 1024;
-static constexpr size_t maxBlockSize = blockSizes[predefinedBlockSizeCount - 1];
+static constexpr size_t maxPredefinedBlockSize = blockSizes[predefinedBlockSizeCount - 1];
 
 struct SizeMap
 {
@@ -27,7 +27,7 @@ struct SizeMap
     {
         size_t j = 0;
         values[0] = 0;
-        for (size_t i = 1; i <= maxBlockSize; i++)
+        for (size_t i = 1; i <= maxPredefinedBlockSize; ++i)
         {
             if (i <= blockSizes[j])
             {
@@ -41,16 +41,16 @@ struct SizeMap
         }
     }
 
-    size_t values[maxBlockSize + 1];
+    size_t values[maxPredefinedBlockSize + 1];
 };
 
 static const SizeMap sizeMap;
 
 PredefinedBlockAllocator::PredefinedBlockAllocator()
+    : blockCount{ 0 }
+    , chunkCount{ 0 }
+    , chunks{ nullptr }
 {
-    blockCount = 0;
-    chunkCount = 0;
-    chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
 }
 
@@ -65,8 +65,9 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
     {
         return nullptr;
     }
-    if (size > maxBlockSize)
+    if (size > maxPredefinedBlockSize)
     {
+        // assert(false);
         return malloc(size);
     }
 
@@ -113,13 +114,13 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
         return;
     }
 
-    if (size > maxBlockSize)
+    if (size > maxPredefinedBlockSize)
     {
         free(p);
         return;
     }
 
-    assert(0 < size && size <= maxBlockSize);
+    assert(0 < size && size <= maxPredefinedBlockSize);
 
     size_t index = sizeMap.values[size];
     assert(0 <= index && index <= predefinedBlockSizeCount);

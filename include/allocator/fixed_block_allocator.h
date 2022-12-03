@@ -7,11 +7,11 @@ class FixedBlockAllocator
 {
 public:
     FixedBlockAllocator()
+        : blockCount{ 0 }
+        , chunkCount{ 0 }
+        , chunks{ nullptr }
+        , freeList{ nullptr }
     {
-        blockCount = 0;
-        chunkCount = 0;
-        chunks = nullptr;
-        freeList = nullptr;
     }
 
     ~FixedBlockAllocator()

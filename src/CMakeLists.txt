@@ -4,6 +4,7 @@ set(HEADER_FILES
     ../include/allocator/fixed_block_allocator.h
     ../include/allocator/predefined_block_allocator.h
     ../include/allocator/block_allocator.h
+    ../include/allocator/allocator.h
 )
 set(SOURCE_FILES
     stack_allocator.cpp

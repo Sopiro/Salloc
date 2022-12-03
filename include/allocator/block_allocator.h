@@ -1,20 +1,20 @@
 #pragma once
 
-#include "common.h"
+#include "allocator.h"
 
 constexpr size_t maxBlockSize = 1024;
 constexpr size_t blockUnit = 8;
 constexpr size_t blockSizeCount = maxBlockSize / blockUnit;
 
-class BlockAllocator
+class BlockAllocator : public Allocator
 {
 public:
     BlockAllocator();
     ~BlockAllocator();
 
-    void* Allocate(size_t size);
-    void Free(void* p, size_t size);
-    void Clear();
+    virtual void* Allocate(size_t size) override;
+    virtual void Free(void* p, size_t size) override;
+    virtual void Clear() override;
 
     size_t GetBlockCount() const;
     size_t GetChunkCount() const;

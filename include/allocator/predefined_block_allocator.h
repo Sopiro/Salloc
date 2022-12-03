@@ -1,18 +1,19 @@
 #pragma once
 
+#include "allocator.h"
 #include "common.h"
 
 constexpr size_t predefinedBlockSizeCount = 14;
 
-class PredefinedBlockAllocator
+class PredefinedBlockAllocator : public Allocator
 {
 public:
     PredefinedBlockAllocator();
     ~PredefinedBlockAllocator();
 
-    void* Allocate(size_t size);
-    void Free(void* p, size_t size);
-    void Clear();
+    virtual void* Allocate(size_t size) override;
+    virtual void Free(void* p, size_t size) override;
+    virtual void Clear() override;
 
     size_t GetBlockCount() const;
     size_t GetChunkCount() const;

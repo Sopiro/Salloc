@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common.h"
+#include "allocator.h"
 
-constexpr int32 stackSize = 100 * 1024;
-constexpr int32 maxStackEntries = 32;
+constexpr size_t stackSize = 100 * 1024;
+constexpr size_t maxStackEntries = 32;
 
 struct StackEntry
 {
@@ -14,15 +14,15 @@ struct StackEntry
 
 // Stack allocator used for transient, predictable allocations.
 // You muse nest allocate/free pairs
-class StackAllocator
+class StackAllocator : public Allocator
 {
 public:
     StackAllocator();
     ~StackAllocator();
 
-    void* Allocate(size_t size);
-    void Free(void* p);
-    void Clear();
+    virtual void* Allocate(size_t size) override;
+    virtual void Free(void* p, size_t size) override;
+    virtual void Clear() override;
 
     size_t GetAllocation() const;
     size_t GetMaxAllocation() const;
