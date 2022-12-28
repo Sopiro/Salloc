@@ -23,13 +23,13 @@ TEST_CASE("Stack allocator")
 {
     StackAllocator sa;
 
-    for (size_t i = 1; i <= maxStackEntries; i++)
+    for (size_t i = 1; i <= max_stack_entries; i++)
     {
         sa.Allocate(i);
     }
 
     REQUIRE_EQ(sa.GetAllocation(), sa.GetMaxAllocation());
-    REQUIRE_EQ(sa.GetAllocation(), (1 + maxStackEntries) * maxStackEntries / 2);
+    REQUIRE_EQ(sa.GetAllocation(), (1 + max_stack_entries) * max_stack_entries / 2);
 
     sa.Clear();
 }
@@ -86,28 +86,28 @@ TEST_CASE("Block allocator")
     fdba.Allocate(512);
     fdba.Allocate(640);
 
-    REQUIRE_EQ(fdba.GetChunkCount(), predefinedBlockSizeCount);
-    REQUIRE_EQ(fdba.GetBlockCount(), predefinedBlockSizeCount);
+    REQUIRE_EQ(fdba.GetChunkCount(), predefined_block_size_count);
+    REQUIRE_EQ(fdba.GetBlockCount(), predefined_block_size_count);
 
     // Allocations fit in exsiting memory block
     fdba.Allocate(17);
     fdba.Allocate(18);
     fdba.Allocate(19);
 
-    REQUIRE_EQ(fdba.GetChunkCount(), predefinedBlockSizeCount); // Not changed
-    REQUIRE_EQ(fdba.GetBlockCount(), predefinedBlockSizeCount + 3);
+    REQUIRE_EQ(fdba.GetChunkCount(), predefined_block_size_count); // Not changed
+    REQUIRE_EQ(fdba.GetBlockCount(), predefined_block_size_count + 3);
 }
 
 TEST_CASE("Block allocator")
 {
     BlockAllocator ba;
 
-    size_t count = maxBlockSize;
-    for (size_t i = 1; i <= maxBlockSize; i++)
+    size_t count = max_block_size;
+    for (size_t i = 1; i <= max_block_size; i++)
     {
         ba.Allocate(i);
     }
 
-    REQUIRE_EQ(ba.GetChunkCount(), maxBlockSize / blockUnit);
+    REQUIRE_EQ(ba.GetChunkCount(), max_block_size / block_unit);
     REQUIRE_EQ(ba.GetBlockCount(), count);
 }

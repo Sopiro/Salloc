@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
 
-set(CMAKE_CXX_STANDARD 17)
-
 option(BUILD_UNIT_TESTS "Build unit tests" ON)
 
 project(allocator LANGUAGES CXX VERSION 0.0.1)

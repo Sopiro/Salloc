@@ -2,9 +2,9 @@
 
 #include "allocator.h"
 
-constexpr size_t maxBlockSize = 1024;
-constexpr size_t blockUnit = 8;
-constexpr size_t blockSizeCount = maxBlockSize / blockUnit;
+constexpr size_t max_block_size = 1024;
+constexpr size_t block_unit = 8;
+constexpr size_t block_size_count = max_block_size / block_unit;
 
 class BlockAllocator : public Allocator
 {
@@ -24,7 +24,7 @@ private:
     size_t chunkCount;
 
     Chunk* chunks;
-    Block* freeList[blockSizeCount];
+    Block* freeList[block_size_count];
 };
 
 inline size_t BlockAllocator::GetBlockCount() const

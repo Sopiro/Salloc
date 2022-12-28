@@ -15,12 +15,12 @@ StackAllocator::~StackAllocator()
 
 void* StackAllocator::Allocate(size_t size)
 {
-    assert(entryCount < maxStackEntries && "Increase the maxStackEntries");
+    assert(entryCount < max_stack_entries && "Increase the max_stack_entries");
 
     StackEntry* entry = entries + entryCount;
     entry->size = size;
 
-    if (index + size > stackSize)
+    if (index + size > stack_size)
     {
         entry->data = (int8*)malloc(size);
         entry->mallocUsed = true;

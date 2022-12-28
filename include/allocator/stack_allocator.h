@@ -2,8 +2,8 @@
 
 #include "allocator.h"
 
-constexpr size_t stackSize = 100 * 1024;
-constexpr size_t maxStackEntries = 32;
+constexpr size_t stack_size = 100 * 1024;
+constexpr size_t max_stack_entries = 32;
 
 struct StackEntry
 {
@@ -28,13 +28,13 @@ public:
     size_t GetMaxAllocation() const;
 
 private:
-    int8* stack[stackSize];
+    int8* stack[stack_size];
     size_t index;
 
     size_t allocation;
     size_t maxAllocation;
 
-    StackEntry entries[maxStackEntries];
+    StackEntry entries[max_stack_entries];
     size_t entryCount;
 };
 

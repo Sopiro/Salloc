@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-template <size_t blockSize, size_t blockCapacity = 32>
+template <size_t blockSize, size_t blockCapacity = 64>
 class FixedBlockAllocator
 {
 public:

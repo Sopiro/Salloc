@@ -3,7 +3,7 @@
 #include "allocator.h"
 #include "common.h"
 
-constexpr size_t predefinedBlockSizeCount = 14;
+constexpr size_t predefined_block_size_count = 14;
 
 class PredefinedBlockAllocator : public Allocator
 {
@@ -23,7 +23,7 @@ private:
     size_t chunkCount;
 
     Chunk* chunks;
-    Block* freeList[predefinedBlockSizeCount];
+    Block* freeList[predefined_block_size_count];
 };
 
 inline size_t PredefinedBlockAllocator::GetBlockCount() const

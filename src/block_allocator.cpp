@@ -1,6 +1,6 @@
 #include "allocator/block_allocator.h"
 
-static constexpr size_t chunkSize = 16 * 1024;
+static constexpr size_t chunk_size = 16 * 1024;
 
 BlockAllocator::BlockAllocator()
     : blockCount{ 0 }
@@ -21,31 +21,31 @@ void* BlockAllocator::Allocate(size_t size)
     {
         return nullptr;
     }
-    if (size > maxBlockSize)
+    if (size > max_block_size)
     {
         return malloc(size);
     }
 
-    assert(0 < size && size <= maxBlockSize);
+    assert(0 < size && size <= max_block_size);
 
     size_t blockSize = size;
-    size_t index = size / blockUnit;
-    size_t mod = size % blockUnit;
+    size_t index = size / block_unit;
+    size_t mod = size % block_unit;
     if (mod != 0)
     {
-        blockSize += blockUnit - mod;
+        blockSize += block_unit - mod;
     }
     else
     {
         --index;
     }
-    size_t blockCapacity = chunkSize / blockSize;
+    size_t blockCapacity = chunk_size / blockSize;
 
-    assert(0 <= index && index <= blockSizeCount);
+    assert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)malloc(chunkSize);
+        Block* blocks = (Block*)malloc(chunk_size);
 
         // Build a linked list for the free list.
         for (size_t i = 0; i < blockCapacity - 1; ++i)
@@ -81,25 +81,25 @@ void BlockAllocator::Free(void* p, size_t size)
         return;
     }
 
-    if (size > maxBlockSize)
+    if (size > max_block_size)
     {
         free(p);
         return;
     }
 
     size_t blockSize = size;
-    size_t index = size / blockUnit;
-    size_t mod = size % blockUnit;
+    size_t index = size / block_unit;
+    size_t mod = size % block_unit;
     if (mod != 0)
     {
-        blockSize += blockUnit - mod;
+        blockSize += block_unit - mod;
     }
     else
     {
         --index;
     }
 
-    assert(0 <= index && index <= blockSizeCount);
+    assert(0 <= index && index <= block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -110,11 +110,11 @@ void BlockAllocator::Free(void* p, size_t size)
     {
         if (chunk->blockSize != blockSize)
         {
-            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunkSize <= (int8*)p);
+            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
         }
         else
         {
-            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunkSize))
+            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunk_size))
             {
                 found = true;
                 break;
