@@ -28,7 +28,7 @@ public:
     size_t GetMaxAllocation() const;
 
 private:
-    int8* stack[stack_size];
+    int8 stack[stack_size];
     size_t index;
 
     size_t allocation;

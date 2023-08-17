@@ -27,7 +27,7 @@ void* StackAllocator::Allocate(size_t size)
     }
     else
     {
-        entry->data = (int8*)stack + index;
+        entry->data = stack + index;
         entry->mallocUsed = false;
         index += size;
     }
