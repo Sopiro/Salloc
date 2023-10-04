@@ -1,7 +1,7 @@
 #include "allocator/predefined_block_allocator.h"
 
 // Predefined block sizes
-static constexpr size_t block_sizes[predefined_block_size_count] = {
+static constexpr size_t block_sizes[PredefinedBlockAllocator::block_size_count] = {
     16,  // 0
     32,  // 1
     64,  // 2
@@ -19,7 +19,7 @@ static constexpr size_t block_sizes[predefined_block_size_count] = {
 };
 
 static constexpr size_t chunk_size = 16 * 1024;
-static constexpr size_t max_predefined_block_size = block_sizes[predefined_block_size_count - 1];
+static constexpr size_t max_block_size = block_sizes[PredefinedBlockAllocator::block_size_count - 1];
 
 struct SizeMap
 {
@@ -27,7 +27,7 @@ struct SizeMap
     {
         size_t j = 0;
         values[0] = 0;
-        for (size_t i = 1; i <= max_predefined_block_size; ++i)
+        for (size_t i = 1; i <= max_block_size; ++i)
         {
             if (i <= block_sizes[j])
             {
@@ -41,7 +41,7 @@ struct SizeMap
         }
     }
 
-    size_t values[max_predefined_block_size + 1];
+    size_t values[max_block_size + 1];
 };
 
 static const SizeMap size_map;
@@ -65,14 +65,14 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
     {
         return nullptr;
     }
-    if (size > max_predefined_block_size)
+    if (size > max_block_size)
     {
         // assert(false);
         return malloc(size);
     }
 
     size_t index = size_map.values[size];
-    assert(0 <= index && index <= predefined_block_size_count);
+    assert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
@@ -83,11 +83,11 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
         // Build a linked list for the free list.
         for (size_t i = 0; i < blockCapacity - 1; ++i)
         {
-            Block* block = (Block*)((int8*)blocks + blockSize * i);
-            Block* next = (Block*)((int8*)blocks + blockSize * (i + 1));
+            Block* block = (Block*)((char*)blocks + blockSize * i);
+            Block* next = (Block*)((char*)blocks + blockSize * (i + 1));
             block->next = next;
         }
-        Block* last = (Block*)((int8*)blocks + blockSize * (blockCapacity - 1));
+        Block* last = (Block*)((char*)blocks + blockSize * (blockCapacity - 1));
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
@@ -114,16 +114,16 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
         return;
     }
 
-    if (size > max_predefined_block_size)
+    if (size > max_block_size)
     {
         free(p);
         return;
     }
 
-    assert(0 < size && size <= max_predefined_block_size);
+    assert(0 < size && size <= max_block_size);
 
     size_t index = size_map.values[size];
-    assert(0 <= index && index <= predefined_block_size_count);
+    assert(0 <= index && index <= block_size_count);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
@@ -135,11 +135,11 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
     {
         if (chunk->blockSize != blockSize)
         {
-            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + chunk_size <= (char*)p);
         }
         else
         {
-            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunk_size))
+            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + chunk_size))
             {
                 found = true;
                 break;

@@ -2,12 +2,9 @@
 
 #include "allocator.h"
 
-constexpr size_t stack_size = 100 * 1024;
-constexpr size_t max_stack_entries = 32;
-
 struct StackEntry
 {
-    int8* data;
+    char* data;
     size_t size;
     bool mallocUsed;
 };
@@ -17,6 +14,9 @@ struct StackEntry
 class StackAllocator : public Allocator
 {
 public:
+    static constexpr inline size_t stack_size = 100 * 1024;
+    static constexpr inline size_t max_stack_entries = 32;
+
     StackAllocator();
     ~StackAllocator();
 
@@ -28,7 +28,7 @@ public:
     size_t GetMaxAllocation() const;
 
 private:
-    int8 stack[stack_size];
+    char stack[stack_size];
     size_t index;
 
     size_t allocation;

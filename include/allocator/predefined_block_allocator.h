@@ -1,13 +1,12 @@
 #pragma once
 
 #include "allocator.h"
-#include "common.h"
-
-constexpr size_t predefined_block_size_count = 14;
 
 class PredefinedBlockAllocator : public Allocator
 {
 public:
+    static constexpr inline size_t block_size_count = 14;
+
     PredefinedBlockAllocator();
     ~PredefinedBlockAllocator();
 
@@ -23,7 +22,7 @@ private:
     size_t chunkCount;
 
     Chunk* chunks;
-    Block* freeList[predefined_block_size_count];
+    Block* freeList[block_size_count];
 };
 
 inline size_t PredefinedBlockAllocator::GetBlockCount() const

@@ -1,7 +1,5 @@
 #include "allocator/block_allocator.h"
 
-static constexpr size_t chunk_size = 16 * 1024;
-
 BlockAllocator::BlockAllocator()
     : blockCount{ 0 }
     , chunkCount{ 0 }
@@ -50,11 +48,11 @@ void* BlockAllocator::Allocate(size_t size)
         // Build a linked list for the free list.
         for (size_t i = 0; i < blockCapacity - 1; ++i)
         {
-            Block* block = (Block*)((int8*)blocks + blockSize * i);
-            Block* next = (Block*)((int8*)blocks + blockSize * (i + 1));
+            Block* block = (Block*)((char*)blocks + blockSize * i);
+            Block* next = (Block*)((char*)blocks + blockSize * (i + 1));
             block->next = next;
         }
-        Block* last = (Block*)((int8*)blocks + blockSize * (blockCapacity - 1));
+        Block* last = (Block*)((char*)blocks + blockSize * (blockCapacity - 1));
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
@@ -110,11 +108,11 @@ void BlockAllocator::Free(void* p, size_t size)
     {
         if (chunk->blockSize != blockSize)
         {
-            assert((int8*)p + blockSize <= (int8*)chunk->blocks || (int8*)chunk->blocks + chunk_size <= (int8*)p);
+            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + chunk_size <= (char*)p);
         }
         else
         {
-            if (((int8*)chunk->blocks <= (int8*)p && (int8*)p + blockSize <= (int8*)chunk->blocks + chunk_size))
+            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + chunk_size))
             {
                 found = true;
                 break;

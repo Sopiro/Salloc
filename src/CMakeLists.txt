@@ -1,5 +1,4 @@
 set(HEADER_FILES
-    ../include/allocator/common.h
     ../include/allocator/stack_allocator.h
     ../include/allocator/fixed_block_allocator.h
     ../include/allocator/predefined_block_allocator.h

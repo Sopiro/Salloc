@@ -1,6 +1,19 @@
 #pragma once
 
-#include "common.h"
+#include <assert.h>
+#include <string>
+
+struct Block
+{
+    Block* next;
+};
+
+struct Chunk
+{
+    size_t blockSize;
+    Block* blocks;
+    Chunk* next;
+};
 
 class Allocator
 {

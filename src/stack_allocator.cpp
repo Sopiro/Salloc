@@ -22,7 +22,7 @@ void* StackAllocator::Allocate(size_t size)
 
     if (index + size > stack_size)
     {
-        entry->data = (int8*)malloc(size);
+        entry->data = (char*)malloc(size);
         entry->mallocUsed = true;
     }
     else
@@ -33,7 +33,7 @@ void* StackAllocator::Allocate(size_t size)
     }
 
     allocation += size;
-    maxAllocation = Max(maxAllocation, allocation);
+    maxAllocation = std::max(maxAllocation, allocation);
     ++entryCount;
 
     return entry->data;

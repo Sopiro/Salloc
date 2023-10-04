@@ -2,13 +2,15 @@
 
 #include "allocator.h"
 
-constexpr size_t max_block_size = 1024;
-constexpr size_t block_unit = 8;
-constexpr size_t block_size_count = max_block_size / block_unit;
-
 class BlockAllocator : public Allocator
 {
 public:
+    static constexpr inline size_t chunk_size = 16 * 1024;
+
+    static constexpr inline size_t max_block_size = 1024;
+    static constexpr inline size_t block_unit = 8;
+    static constexpr inline size_t block_size_count = max_block_size / block_unit;
+
     BlockAllocator();
     ~BlockAllocator();
 
