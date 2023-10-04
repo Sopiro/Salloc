@@ -1,7 +1,8 @@
 #pragma once
 
 #include <assert.h>
-#include <string>
+#include <cstdlib>
+#include <cstring>
 
 struct Block
 {

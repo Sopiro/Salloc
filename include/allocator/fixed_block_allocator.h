@@ -1,7 +1,7 @@
 #pragma once
 
 #include <assert.h>
-#include <string>
+#include <cstring>
 
 template <size_t blockSize, size_t blockCapacity = 64>
 class FixedBlockAllocator

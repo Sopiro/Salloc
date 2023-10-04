@@ -1,5 +1,7 @@
 #include "allocator/stack_allocator.h"
 
+#include <algorithm>
+
 StackAllocator::StackAllocator()
     : index{ 0 }
     , allocation{ 0 }
