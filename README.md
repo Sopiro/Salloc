@@ -3,10 +3,10 @@
 Specialized memory allocators in C++
 
 ## Implementations
-- Stack allocator
-- Fixed block allocator
-- Predefined block allocator
-- Block allocator
+- Linear stack allocator 
+- Fixed block allocator 
+- Predefined block allocator 
+- General block allocator 
 
 ## Building and running
 - Install [CMake](https://cmake.org/install/)
