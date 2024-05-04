@@ -1,5 +1,6 @@
 set(HEADER_FILES
     ../include/allocator/stack_allocator.h
+    ../include/allocator/linear_allocator.h
     ../include/allocator/fixed_block_allocator.h
     ../include/allocator/predefined_block_allocator.h
     ../include/allocator/block_allocator.h
@@ -7,6 +8,7 @@ set(HEADER_FILES
 )
 set(SOURCE_FILES
     stack_allocator.cpp
+    linear_allocator.cpp
     predefined_block_allocator.cpp
     block_allocator.cpp
 )

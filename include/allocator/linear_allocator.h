@@ -2,48 +2,54 @@
 
 #include "allocator.h"
 
-// Stack allocator used for transient, predictable allocations.
 // You muse nest allocate/free pairs
-class StackAllocator : public Allocator
+class LinearAllocator : public Allocator
 {
 public:
-    static constexpr inline size_t stack_size = 100 * 1024;
-    static constexpr inline size_t max_stack_entries = 32;
-
-    StackAllocator();
-    ~StackAllocator();
+    LinearAllocator(size_t initialCapacity = 10 * 1024);
+    ~LinearAllocator();
 
     virtual void* Allocate(size_t size) override;
     virtual void Free(void* p, size_t size) override;
     virtual void Clear() override;
 
+    bool GrowMemory();
+
+    size_t GetCapacity() const;
     size_t GetAllocation() const;
     size_t GetMaxAllocation() const;
 
 private:
-    struct StackEntry
+    struct MemoryEntry
     {
         char* data;
         size_t size;
         bool mallocUsed;
     };
 
-    char stack[stack_size];
+    MemoryEntry* entries;
+    size_t entryCount;
+    size_t entryCapacity;
+
+    char* mem;
+    size_t capacity;
     size_t index;
 
     size_t allocation;
     size_t maxAllocation;
-
-    StackEntry entries[max_stack_entries];
-    size_t entryCount;
 };
 
-inline size_t StackAllocator::GetAllocation() const
+inline size_t LinearAllocator::GetCapacity() const
+{
+    return capacity;
+}
+
+inline size_t LinearAllocator::GetAllocation() const
 {
     return allocation;
 }
 
-inline size_t StackAllocator::GetMaxAllocation() const
+inline size_t LinearAllocator::GetMaxAllocation() const
 {
     return maxAllocation;
 }

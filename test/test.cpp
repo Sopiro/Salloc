@@ -3,6 +3,7 @@
 
 #include "block_allocator.h"
 #include "fixed_block_allocator.h"
+#include "linear_allocator.h"
 #include "predefined_block_allocator.h"
 #include "stack_allocator.h"
 
@@ -32,6 +33,27 @@ TEST_CASE("Stack allocator")
     REQUIRE_EQ(sa.GetAllocation(), (1 + StackAllocator::max_stack_entries) * StackAllocator::max_stack_entries / 2);
 
     sa.Clear();
+}
+
+TEST_CASE("Linear allocator")
+{
+    LinearAllocator la;
+
+    size_t cap = la.GetCapacity();
+    la.GrowMemory();
+    REQUIRE_EQ(la.GetCapacity(), cap);
+
+    size_t i = 8;
+    while (!la.GrowMemory())
+    {
+        la.Allocate(i);
+    }
+
+    REQUIRE_EQ(la.GetCapacity(), cap + cap / 2);
+    REQUIRE_EQ(la.GetAllocation(), cap);
+    REQUIRE_EQ(la.GetAllocation(), la.GetMaxAllocation());
+
+    la.Clear();
 }
 
 TEST_CASE("Fixed block allocator")

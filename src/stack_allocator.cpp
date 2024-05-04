@@ -1,7 +1,5 @@
 #include "allocator/stack_allocator.h"
 
-#include <algorithm>
-
 StackAllocator::StackAllocator()
     : index{ 0 }
     , allocation{ 0 }
@@ -35,7 +33,11 @@ void* StackAllocator::Allocate(size_t size)
     }
 
     allocation += size;
-    maxAllocation = std::max(maxAllocation, allocation);
+    if (allocation > maxAllocation)
+    {
+        maxAllocation = allocation;
+    }
+
     ++entryCount;
 
     return entry->data;
@@ -45,7 +47,7 @@ void StackAllocator::Free(void* p, size_t size)
 {
     assert(entryCount > 0);
 
-    StackEntry* entry = entries + entryCount - 1;
+    StackEntry* entry = entries + (entryCount - 1);
     assert(entry->data == p);
     assert(entry->size == size);
 

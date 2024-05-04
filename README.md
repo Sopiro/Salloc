@@ -3,7 +3,8 @@
 Specialized memory allocators in C++
 
 ## Implementations
-- Linear stack allocator 
+- Stack allocator 
+- Linear allocator 
 - Fixed block allocator 
 - Predefined block allocator 
 - General block allocator 
