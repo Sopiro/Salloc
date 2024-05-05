@@ -85,24 +85,25 @@ void LinearAllocator::Free(void* p, size_t size)
 
 bool LinearAllocator::GrowMemory()
 {
+    assert(index == 0);
+
     if (maxAllocation < capacity)
     {
         return false;
     }
 
     // Grow memory by half
-    char* old = mem;
+    free(mem);
     capacity += capacity / 2;
     mem = (char*)malloc(capacity);
-    memcpy(mem, old, allocation);
-    memset(mem + allocation, 0, (capacity - allocation));
-    free(old);
+    memset(mem, 0, capacity);
 
     return true;
 }
 
 void LinearAllocator::Clear()
 {
+    index = 0;
     entryCount = 0;
     entryCapacity = 0;
     allocation = 0;
