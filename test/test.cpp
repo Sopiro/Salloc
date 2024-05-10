@@ -40,18 +40,18 @@ TEST_CASE("Linear allocator")
     LinearAllocator la;
 
     size_t cap = la.GetCapacity();
-    la.GrowMemory();
+    REQUIRE_EQ(la.GrowMemory(), false);
     REQUIRE_EQ(la.GetCapacity(), cap);
 
-    size_t i = 8;
-    while (!la.GrowMemory())
-    {
-        la.Allocate(i);
-    }
+    void* m = la.Allocate(cap);
+    la.Free(m, cap);
+
+    REQUIRE_EQ(la.GetAllocation(), 0);
+    REQUIRE_EQ(la.GetMaxAllocation(), cap);
+
+    REQUIRE_EQ(la.GrowMemory(), true);
 
     REQUIRE_EQ(la.GetCapacity(), cap + cap / 2);
-    REQUIRE_EQ(la.GetAllocation(), cap);
-    REQUIRE_EQ(la.GetAllocation(), la.GetMaxAllocation());
 
     la.Clear();
 }
@@ -132,4 +132,27 @@ TEST_CASE("Block allocator")
 
     REQUIRE_EQ(ba.GetChunkCount(), BlockAllocator::max_block_size / BlockAllocator::block_unit);
     REQUIRE_EQ(ba.GetBlockCount(), count);
+
+    size_t chunkSize1 = ba.GetChunkSize(1);
+
+    // Check for chunk size growing
+    for (size_t i = 1; i <= BlockAllocator::max_block_size; i++)
+    {
+        size_t c = ba.GetChunkSize(i);
+        REQUIRE_EQ(chunkSize1, c);
+    }
+
+    ba.Clear();
+
+    for (size_t i = 0; i < chunkSize1 / BlockAllocator::block_unit; i++)
+    {
+        ba.Allocate(1);
+    }
+
+    REQUIRE_EQ(ba.GetChunkSize(1), chunkSize1 + chunkSize1 / 2);
+    REQUIRE_EQ(ba.GetChunkSize(2), chunkSize1 + chunkSize1 / 2);
+    REQUIRE_EQ(ba.GetChunkSize(4), chunkSize1 + chunkSize1 / 2);
+    REQUIRE_EQ(ba.GetChunkSize(8), chunkSize1 + chunkSize1 / 2);
+
+    REQUIRE_EQ(ba.GetChunkSize(9), chunkSize1);
 }

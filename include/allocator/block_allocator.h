@@ -5,26 +5,28 @@
 class BlockAllocator : public Allocator
 {
 public:
-    static constexpr inline size_t chunk_size = 16 * 1024;
-
     static constexpr inline size_t max_block_size = 1024;
     static constexpr inline size_t block_unit = 8;
     static constexpr inline size_t block_size_count = max_block_size / block_unit;
 
-    BlockAllocator();
+    BlockAllocator(size_t initialChunkSize = 16 * 1024);
     ~BlockAllocator();
 
     virtual void* Allocate(size_t size) override;
     virtual void Free(void* p, size_t size) override;
     virtual void Clear() override;
+    void Clear(size_t initialChunkSize);
 
     size_t GetBlockCount() const;
     size_t GetChunkCount() const;
+
+    size_t GetChunkSize(size_t size) const;
 
 private:
     size_t blockCount;
     size_t chunkCount;
 
+    size_t chunkSizes[block_size_count];
     Chunk* chunks;
     Block* freeList[block_size_count];
 };

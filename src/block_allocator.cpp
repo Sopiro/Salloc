@@ -1,11 +1,16 @@
 #include "allocator/block_allocator.h"
 
-BlockAllocator::BlockAllocator()
+BlockAllocator::BlockAllocator(size_t initialChunkSize)
     : blockCount{ 0 }
     , chunkCount{ 0 }
     , chunks{ nullptr }
 {
     memset(freeList, 0, sizeof(freeList));
+
+    for (size_t i = 0; i < block_size_count; ++i)
+    {
+        chunkSizes[i] = initialChunkSize;
+    }
 }
 
 BlockAllocator::~BlockAllocator()
@@ -37,13 +42,18 @@ void* BlockAllocator::Allocate(size_t size)
     {
         --index;
     }
-    size_t blockCapacity = chunk_size / blockSize;
 
     assert(0 <= index && index <= block_size_count);
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)malloc(chunk_size);
+        // Increase chunk size by half
+        chunkSizes[index] += chunkSizes[index] / 2;
+
+        size_t chunkSize = chunkSizes[index];
+        size_t blockCapacity = chunkSize / blockSize;
+
+        Block* blocks = (Block*)malloc(chunkSize);
 
         // Build a linked list for the free list.
         for (size_t i = 0; i < blockCapacity - 1; ++i)
@@ -56,6 +66,7 @@ void* BlockAllocator::Allocate(size_t size)
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+        newChunk->capacity = blockCapacity;
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -106,13 +117,14 @@ void BlockAllocator::Free(void* p, size_t size)
     Chunk* chunk = chunks;
     while (chunk)
     {
+        size_t chunkSize = chunk->capacity * chunk->blockSize;
         if (chunk->blockSize != blockSize)
         {
-            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + chunk_size <= (char*)p);
+            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + chunkSize <= (char*)p);
         }
         else
         {
-            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + chunk_size))
+            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + chunkSize))
             {
                 found = true;
                 break;
@@ -146,4 +158,25 @@ void BlockAllocator::Clear()
     chunkCount = 0;
     chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
+}
+
+void BlockAllocator::Clear(size_t initialChunkSize)
+{
+    Clear();
+
+    for (size_t i = 0; i < block_size_count; ++i)
+    {
+        chunkSizes[i] = initialChunkSize;
+    }
+}
+
+size_t BlockAllocator::GetChunkSize(size_t size) const
+{
+    size_t index = size / block_unit;
+    if (size % block_unit == 0)
+    {
+        --index;
+    }
+
+    return chunkSizes[index];
 }

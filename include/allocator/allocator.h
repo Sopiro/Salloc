@@ -11,6 +11,7 @@ struct Block
 
 struct Chunk
 {
+    size_t capacity;
     size_t blockSize;
     Block* blocks;
     Chunk* next;

@@ -3,12 +3,13 @@
 #include <assert.h>
 #include <cstring>
 
-template <size_t blockSize, size_t blockCapacity = 64>
+template <size_t blockSize>
 class FixedBlockAllocator
 {
 public:
-    FixedBlockAllocator()
-        : blockCount{ 0 }
+    FixedBlockAllocator(size_t initialBlockCapacity = 64)
+        : blockCapacity{ initialBlockCapacity }
+        , blockCount{ 0 }
         , chunkCount{ 0 }
         , chunks{ nullptr }
         , freeList{ nullptr }
@@ -26,6 +27,7 @@ public:
         {
             assert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
 
+            blockCapacity += blockCapacity / 2;
             Block* blocks = (Block*)malloc(blockCapacity * blockSize);
             memset(blocks, 0, blockCapacity * blockSize);
 
@@ -40,6 +42,7 @@ public:
             last->next = nullptr;
 
             Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+            newChunk->capacity = blockCapacity;
             newChunk->blockSize = blockSize;
             newChunk->blocks = blocks;
             newChunk->next = chunks;
@@ -67,7 +70,7 @@ public:
         Chunk* chunk = chunks;
         while (chunk)
         {
-            if ((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + blockSize * blockCapacity)
+            if ((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + blockSize * chunk->capacity)
             {
                 found = true;
                 break;
@@ -110,6 +113,7 @@ public:
     }
 
 private:
+    size_t blockCapacity;
     size_t chunkCount;
     size_t blockCount;
     Chunk* chunks;
