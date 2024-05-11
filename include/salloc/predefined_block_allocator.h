@@ -45,7 +45,7 @@ private:
     {
         SizeMap(std::span<size_t> blockSizes)
             : sizes(blockSizes.begin(), blockSizes.end())
-            , values(blockSizes.back())
+            , values(blockSizes.back() + 1)
         {
             size_t j = 0;
             values[0] = 0;

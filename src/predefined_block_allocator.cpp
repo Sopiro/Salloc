@@ -17,6 +17,7 @@ PredefinedBlockAllocator::PredefinedBlockAllocator(size_t initialChunkSize, std:
 PredefinedBlockAllocator::~PredefinedBlockAllocator()
 {
     Clear();
+    salloc::Free(freeList);
 }
 
 void* PredefinedBlockAllocator::Allocate(size_t size)
@@ -31,7 +32,7 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
     }
 
     size_t index = sizeMap.values[size];
-    assert(0 <= index && index <= blockSizeCount);
+    assert(0 <= index && index <= sizeMap.sizes.size());
 
     if (freeList[index] == nullptr)
     {
@@ -82,14 +83,14 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
         return;
     }
 
-    assert(0 < size && size <= sizeMap.maxBlockSize);
+    assert(0 < size && size <= sizeMap.MaxBlockSize());
 
     size_t index = sizeMap.values[size];
-    assert(0 <= index && index <= blockSizeCount);
+    assert(0 <= index && index <= sizeMap.sizes.size());
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
-    size_t blockSize = blockSizes[index];
+    size_t blockSize = sizeMap.sizes[index];
     bool found = false;
 
     Chunk* chunk = chunks;
