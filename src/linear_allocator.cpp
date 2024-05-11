@@ -11,17 +11,17 @@ LinearAllocator::LinearAllocator(size_t initialCapacity)
     , allocation{ 0 }
     , maxAllocation{ 0 }
 {
-    mem = (char*)malloc(capacity);
+    mem = (char*)salloc::Alloc(capacity);
     memset(mem, 0, capacity);
-    entries = (MemoryEntry*)malloc(entryCapacity * sizeof(MemoryEntry));
+    entries = (MemoryEntry*)salloc::Alloc(entryCapacity * sizeof(MemoryEntry));
 }
 
 LinearAllocator::~LinearAllocator()
 {
     assert(index == 0 && entryCount == 0);
 
-    free(entries);
-    free(mem);
+    salloc::Free(entries);
+    salloc::Free(mem);
 }
 
 void* LinearAllocator::Allocate(size_t size)
@@ -31,10 +31,10 @@ void* LinearAllocator::Allocate(size_t size)
         // Grow entry array by half
         MemoryEntry* old = entries;
         entryCapacity += entryCapacity / 2;
-        entries = (MemoryEntry*)malloc(entryCapacity * sizeof(MemoryEntry));
+        entries = (MemoryEntry*)salloc::Alloc(entryCapacity * sizeof(MemoryEntry));
         memcpy(entries, old, entryCount * sizeof(MemoryEntry));
         memset(entries + entryCount, 0, (entryCapacity - entryCount) * sizeof(MemoryEntry));
-        free(old);
+        salloc::Free(old);
     }
 
     MemoryEntry* entry = entries + entryCount;
@@ -42,7 +42,7 @@ void* LinearAllocator::Allocate(size_t size)
 
     if (index + size > capacity)
     {
-        entry->data = (char*)malloc(size);
+        entry->data = (char*)salloc::Alloc(size);
         entry->mallocUsed = true;
     }
     else
@@ -74,7 +74,7 @@ void LinearAllocator::Free(void* p, size_t size)
 
     if (entry->mallocUsed)
     {
-        free(p);
+        salloc::Free(p);
     }
     else
     {
@@ -97,9 +97,9 @@ bool LinearAllocator::GrowMemory()
     }
 
     // Grow memory by half
-    free(mem);
+    salloc::Free(mem);
     capacity += capacity / 2;
-    mem = (char*)malloc(capacity);
+    mem = (char*)salloc::Alloc(capacity);
     memset(mem, 0, capacity);
 
     return true;

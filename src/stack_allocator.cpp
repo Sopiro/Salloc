@@ -25,7 +25,7 @@ void* StackAllocator::Allocate(size_t size)
 
     if (index + size > stack_size)
     {
-        entry->data = (char*)malloc(size);
+        entry->data = (char*)salloc::Alloc(size);
         entry->mallocUsed = true;
     }
     else
@@ -57,7 +57,7 @@ void StackAllocator::Free(void* p, size_t size)
 
     if (entry->mallocUsed)
     {
-        free(p);
+        salloc::Free(p);
     }
     else
     {

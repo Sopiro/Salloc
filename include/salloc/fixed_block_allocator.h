@@ -29,7 +29,7 @@ public:
 
         if (size > blockSize)
         {
-            return malloc(size);
+            return salloc::Alloc(size);
         }
 
         if (freeList == nullptr)
@@ -37,7 +37,7 @@ public:
             assert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
 
             blockCapacity += blockCapacity / 2;
-            Block* blocks = (Block*)malloc(blockCapacity * blockSize);
+            Block* blocks = (Block*)salloc::Alloc(blockCapacity * blockSize);
             memset(blocks, 0, blockCapacity * blockSize);
 
             // Build a linked list for the free list.
@@ -50,7 +50,7 @@ public:
             Block* last = (Block*)((char*)blocks + blockSize * (blockCapacity - 1));
             last->next = nullptr;
 
-            Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+            Chunk* newChunk = (Chunk*)salloc::Alloc(sizeof(Chunk));
             newChunk->capacity = blockCapacity;
             newChunk->blockSize = blockSize;
             newChunk->blocks = blocks;
@@ -74,7 +74,7 @@ public:
 
         if (size > blockSize)
         {
-            free(p);
+            salloc::Free(p);
             return;
         }
 
@@ -109,8 +109,8 @@ public:
         {
             Chunk* c0 = chunk;
             chunk = c0->next;
-            free(c0->blocks);
-            free(c0);
+            salloc::Free(c0->blocks);
+            salloc::Free(c0);
         }
 
         chunks = nullptr;

@@ -71,7 +71,7 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
     if (size > max_block_size)
     {
         // assert(false);
-        return malloc(size);
+        return salloc::Alloc(size);
     }
 
     size_t index = size_map.values[size];
@@ -79,7 +79,7 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)malloc(chunk_size);
+        Block* blocks = (Block*)salloc::Alloc(chunk_size);
         size_t blockSize = block_sizes[index];
         size_t blockCapacity = chunk_size / blockSize;
 
@@ -93,7 +93,7 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
         Block* last = (Block*)((char*)blocks + blockSize * (blockCapacity - 1));
         last->next = nullptr;
 
-        Chunk* newChunk = (Chunk*)malloc(sizeof(Chunk));
+        Chunk* newChunk = (Chunk*)salloc::Alloc(sizeof(Chunk));
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -119,7 +119,7 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
 
     if (size > max_block_size)
     {
-        free(p);
+        salloc::Free(p);
         return;
     }
 
@@ -168,8 +168,8 @@ void PredefinedBlockAllocator::Clear()
     {
         Chunk* c0 = chunk;
         chunk = c0->next;
-        free(c0->blocks);
-        free(c0);
+        salloc::Free(c0->blocks);
+        salloc::Free(c0);
     }
 
     blockCount = 0;

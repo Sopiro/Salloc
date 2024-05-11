@@ -9,6 +9,17 @@
 namespace salloc
 {
 
+// Default upstream allocation function
+inline void* Alloc(size_t size)
+{
+    return std::malloc(size);
+}
+
+inline void Free(void* mem)
+{
+    std::free(mem);
+}
+
 struct Block
 {
     Block* next;
