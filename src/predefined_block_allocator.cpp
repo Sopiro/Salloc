@@ -3,58 +3,15 @@
 namespace salloc
 {
 
-// Predefined block sizes
-static constexpr size_t block_sizes[PredefinedBlockAllocator::block_size_count] = {
-    16,  // 0
-    32,  // 1
-    64,  // 2
-    96,  // 3
-    128, // 4
-    160, // 5
-    192, // 6
-    224, // 7
-    256, // 8
-    320, // 9
-    384, // 10
-    448, // 11
-    512, // 12
-    640, // 13
-};
-
-static constexpr size_t max_block_size = block_sizes[PredefinedBlockAllocator::block_size_count - 1];
-
-struct SizeMap
-{
-    SizeMap()
-    {
-        size_t j = 0;
-        values[0] = 0;
-        for (size_t i = 1; i <= max_block_size; ++i)
-        {
-            if (i <= block_sizes[j])
-            {
-                values[i] = j;
-            }
-            else
-            {
-                ++j;
-                values[i] = j;
-            }
-        }
-    }
-
-    size_t values[max_block_size + 1];
-};
-
-static const SizeMap size_map;
-
-PredefinedBlockAllocator::PredefinedBlockAllocator(size_t initialChunkSize)
+PredefinedBlockAllocator::PredefinedBlockAllocator(size_t initialChunkSize, std::span<size_t> blockSizes)
     : blockCount{ 0 }
     , chunkCount{ 0 }
     , chunkSize{ initialChunkSize }
     , chunks{ nullptr }
+    , sizeMap(std::move(blockSizes))
 {
-    memset(freeList, 0, sizeof(freeList));
+    freeList = (Block**)salloc::Alloc(sizeMap.sizes.size() * sizeof(Block*));
+    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
 }
 
 PredefinedBlockAllocator::~PredefinedBlockAllocator()
@@ -68,21 +25,20 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
     {
         return nullptr;
     }
-    if (size > max_block_size)
+    if (size > sizeMap.MaxBlockSize())
     {
-        // assert(false);
         return salloc::Alloc(size);
     }
 
-    size_t index = size_map.values[size];
-    assert(0 <= index && index <= block_size_count);
+    size_t index = sizeMap.values[size];
+    assert(0 <= index && index <= blockSizeCount);
 
     if (freeList[index] == nullptr)
     {
         chunkSize += chunkSize / 2;
 
         Block* blocks = (Block*)salloc::Alloc(chunkSize);
-        size_t blockSize = block_sizes[index];
+        size_t blockSize = sizeMap.sizes[index];
         size_t blockCapacity = chunkSize / blockSize;
 
         // Build a linked list for the free list.
@@ -120,20 +76,20 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
         return;
     }
 
-    if (size > max_block_size)
+    if (size > sizeMap.MaxBlockSize())
     {
         salloc::Free(p);
         return;
     }
 
-    assert(0 < size && size <= max_block_size);
+    assert(0 < size && size <= sizeMap.maxBlockSize);
 
-    size_t index = size_map.values[size];
-    assert(0 <= index && index <= block_size_count);
+    size_t index = sizeMap.values[size];
+    assert(0 <= index && index <= blockSizeCount);
 
 #if defined(_DEBUG)
     // Verify the memory address and size is valid.
-    size_t blockSize = block_sizes[index];
+    size_t blockSize = blockSizes[index];
     bool found = false;
 
     Chunk* chunk = chunks;
@@ -179,7 +135,7 @@ void PredefinedBlockAllocator::Clear()
     blockCount = 0;
     chunkCount = 0;
     chunks = nullptr;
-    memset(freeList, 0, sizeof(freeList));
+    memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));
 }
 
 } // namespace salloc

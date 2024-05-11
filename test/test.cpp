@@ -92,7 +92,9 @@ TEST_CASE("Fixed block allocator")
 
 TEST_CASE("Predefined block allocator")
 {
-    PredefinedBlockAllocator pba;
+    size_t blockSizes[14] = { 16, 32, 64, 96, 128, 160, 192, 224, 256, 320, 384, 448, 512, 640 };
+
+    PredefinedBlockAllocator pba(16 * 1024, blockSizes);
 
     // Allocate with predefined block sizes
     pba.Allocate(16);
@@ -110,16 +112,16 @@ TEST_CASE("Predefined block allocator")
     pba.Allocate(512);
     pba.Allocate(640);
 
-    REQUIRE_EQ(pba.GetChunkCount(), PredefinedBlockAllocator::block_size_count);
-    REQUIRE_EQ(pba.GetBlockCount(), PredefinedBlockAllocator::block_size_count);
+    REQUIRE_EQ(pba.GetChunkCount(), pba.GetBlockSizeCount());
+    REQUIRE_EQ(pba.GetBlockCount(), pba.GetBlockSizeCount());
 
     // Allocations fit in exsiting memory block
     pba.Allocate(17);
     pba.Allocate(18);
     pba.Allocate(19);
 
-    REQUIRE_EQ(pba.GetChunkCount(), PredefinedBlockAllocator::block_size_count); // Not changed
-    REQUIRE_EQ(pba.GetBlockCount(), PredefinedBlockAllocator::block_size_count + 3);
+    REQUIRE_EQ(pba.GetChunkCount(), pba.GetBlockSizeCount()); // Not changed
+    REQUIRE_EQ(pba.GetBlockCount(), pba.GetBlockSizeCount() + 3);
 }
 
 TEST_CASE("Block allocator")
