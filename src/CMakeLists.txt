@@ -29,8 +29,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS NO
 )
 
-# if(MSVC)
-#     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
-# else()
-#     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
-# endif()
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()

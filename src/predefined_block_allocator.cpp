@@ -4,11 +4,11 @@ namespace salloc
 {
 
 PredefinedBlockAllocator::PredefinedBlockAllocator(size_t initialChunkSize, std::span<size_t> blockSizes)
-    : blockCount{ 0 }
+    : sizeMap(std::move(blockSizes))
+    , blockCount{ 0 }
     , chunkCount{ 0 }
     , chunkSize{ initialChunkSize }
     , chunks{ nullptr }
-    , sizeMap(std::move(blockSizes))
 {
     freeList = (Block**)salloc::Alloc(sizeMap.sizes.size() * sizeof(Block*));
     memset(freeList, 0, sizeMap.sizes.size() * sizeof(Block*));

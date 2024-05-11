@@ -9,7 +9,7 @@ namespace salloc
 class LinearAllocator : public Allocator
 {
 public:
-    LinearAllocator(size_t initialCapacity = 10 * 1024);
+    LinearAllocator(size_t initialCapacity = 16 * 1024);
     ~LinearAllocator();
 
     virtual void* Allocate(size_t size) override;
