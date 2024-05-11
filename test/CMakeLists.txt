@@ -10,7 +10,7 @@ set_target_properties(unit_test PROPERTIES
 )
 
 target_include_directories(unit_test PUBLIC ../include/allocator)
-target_link_libraries(unit_test PUBLIC allocator)
+target_link_libraries(unit_test PUBLIC salloc)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES
     doctest.h

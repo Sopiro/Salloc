@@ -6,8 +6,8 @@ namespace salloc
 LinearAllocator::LinearAllocator(size_t initialCapacity)
     : entryCount{ 0 }
     , entryCapacity{ 32 }
-    , index{ 0 }
     , capacity{ initialCapacity }
+    , index{ 0 }
     , allocation{ 0 }
     , maxAllocation{ 0 }
 {
