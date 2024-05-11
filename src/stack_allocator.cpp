@@ -1,4 +1,4 @@
-#include "allocator/stack_allocator.h"
+#include "salloc/stack_allocator.h"
 
 namespace salloc
 {

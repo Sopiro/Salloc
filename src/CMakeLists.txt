@@ -1,10 +1,10 @@
 set(HEADER_FILES
-    ../include/allocator/stack_allocator.h
-    ../include/allocator/linear_allocator.h
-    ../include/allocator/fixed_block_allocator.h
-    ../include/allocator/predefined_block_allocator.h
-    ../include/allocator/block_allocator.h
-    ../include/allocator/allocator.h
+    ../include/salloc/stack_allocator.h
+    ../include/salloc/linear_allocator.h
+    ../include/salloc/fixed_block_allocator.h
+    ../include/salloc/predefined_block_allocator.h
+    ../include/salloc/block_allocator.h
+    ../include/salloc/allocator.h
 )
 set(SOURCE_FILES
     stack_allocator.cpp

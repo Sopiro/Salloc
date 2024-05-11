@@ -1,4 +1,4 @@
-#include "allocator/linear_allocator.h"
+#include "salloc/linear_allocator.h"
 
 namespace salloc
 {
