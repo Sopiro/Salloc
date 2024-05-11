@@ -138,6 +138,8 @@ void BlockAllocator::Free(void* p, size_t size)
     }
 
     assert(found);
+#else
+    sallocNotUsed(blockSize);
 #endif
 
     Block* block = (Block*)p;

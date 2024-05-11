@@ -48,6 +48,7 @@ void* StackAllocator::Allocate(size_t size)
 
 void StackAllocator::Free(void* p, size_t size)
 {
+    sallocNotUsed(size);
     assert(entryCount > 0);
 
     StackEntry* entry = entries + (entryCount - 1);

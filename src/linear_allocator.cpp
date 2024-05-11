@@ -65,6 +65,7 @@ void* LinearAllocator::Allocate(size_t size)
 
 void LinearAllocator::Free(void* p, size_t size)
 {
+    sallocNotUsed(size);
     assert(entryCount > 0);
 
     MemoryEntry* entry = entries + (entryCount - 1);

@@ -5,7 +5,7 @@
 namespace salloc
 {
 
-// You muse nest allocate/free pairs
+// You must nest allocate/free pairs
 class LinearAllocator : public Allocator
 {
 public:

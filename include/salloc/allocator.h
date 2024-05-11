@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#define sallocNotUsed(x) ((void)(x));
+
 namespace salloc
 {
 
