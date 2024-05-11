@@ -90,36 +90,36 @@ TEST_CASE("Fixed block allocator")
     REQUIRE_EQ(fba.GetBlockCount(), count / 2);
 }
 
-TEST_CASE("Block allocator")
+TEST_CASE("Predefined block allocator")
 {
-    PredefinedBlockAllocator fdba;
+    PredefinedBlockAllocator pba;
 
     // Allocate with predefined block sizes
-    fdba.Allocate(16);
-    fdba.Allocate(32);
-    fdba.Allocate(64);
-    fdba.Allocate(96);
-    fdba.Allocate(128);
-    fdba.Allocate(160);
-    fdba.Allocate(192);
-    fdba.Allocate(224);
-    fdba.Allocate(256);
-    fdba.Allocate(320);
-    fdba.Allocate(384);
-    fdba.Allocate(448);
-    fdba.Allocate(512);
-    fdba.Allocate(640);
+    pba.Allocate(16);
+    pba.Allocate(32);
+    pba.Allocate(64);
+    pba.Allocate(96);
+    pba.Allocate(128);
+    pba.Allocate(160);
+    pba.Allocate(192);
+    pba.Allocate(224);
+    pba.Allocate(256);
+    pba.Allocate(320);
+    pba.Allocate(384);
+    pba.Allocate(448);
+    pba.Allocate(512);
+    pba.Allocate(640);
 
-    REQUIRE_EQ(fdba.GetChunkCount(), PredefinedBlockAllocator::block_size_count);
-    REQUIRE_EQ(fdba.GetBlockCount(), PredefinedBlockAllocator::block_size_count);
+    REQUIRE_EQ(pba.GetChunkCount(), PredefinedBlockAllocator::block_size_count);
+    REQUIRE_EQ(pba.GetBlockCount(), PredefinedBlockAllocator::block_size_count);
 
     // Allocations fit in exsiting memory block
-    fdba.Allocate(17);
-    fdba.Allocate(18);
-    fdba.Allocate(19);
+    pba.Allocate(17);
+    pba.Allocate(18);
+    pba.Allocate(19);
 
-    REQUIRE_EQ(fdba.GetChunkCount(), PredefinedBlockAllocator::block_size_count); // Not changed
-    REQUIRE_EQ(fdba.GetBlockCount(), PredefinedBlockAllocator::block_size_count + 3);
+    REQUIRE_EQ(pba.GetChunkCount(), PredefinedBlockAllocator::block_size_count); // Not changed
+    REQUIRE_EQ(pba.GetBlockCount(), PredefinedBlockAllocator::block_size_count + 3);
 }
 
 TEST_CASE("Block allocator")

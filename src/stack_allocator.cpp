@@ -1,5 +1,7 @@
 #include "salloc/stack_allocator.h"
 
+#include <span>
+
 namespace salloc
 {
 

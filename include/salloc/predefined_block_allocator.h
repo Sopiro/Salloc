@@ -10,7 +10,7 @@ class PredefinedBlockAllocator : public Allocator
 public:
     static constexpr inline size_t block_size_count = 14;
 
-    PredefinedBlockAllocator();
+    PredefinedBlockAllocator(size_t initialChunkSize = 16 * 1024);
     ~PredefinedBlockAllocator();
 
     virtual void* Allocate(size_t size) override;
@@ -24,6 +24,7 @@ private:
     size_t blockCount;
     size_t chunkCount;
 
+    size_t chunkSize;
     Chunk* chunks;
     Block* freeList[block_size_count];
 };

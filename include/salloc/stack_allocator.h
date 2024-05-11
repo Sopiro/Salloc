@@ -5,7 +5,7 @@
 namespace salloc
 {
 
-// Stack allocator used for transient, predictable allocations.
+// Stack allocator is used for transient, predictable allocations.
 // You must nest allocate/free pairs
 class StackAllocator : public Allocator
 {

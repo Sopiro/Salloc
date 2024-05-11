@@ -21,7 +21,6 @@ static constexpr size_t block_sizes[PredefinedBlockAllocator::block_size_count] 
     640, // 13
 };
 
-static constexpr size_t chunk_size = 16 * 1024;
 static constexpr size_t max_block_size = block_sizes[PredefinedBlockAllocator::block_size_count - 1];
 
 struct SizeMap
@@ -49,9 +48,10 @@ struct SizeMap
 
 static const SizeMap size_map;
 
-PredefinedBlockAllocator::PredefinedBlockAllocator()
+PredefinedBlockAllocator::PredefinedBlockAllocator(size_t initialChunkSize)
     : blockCount{ 0 }
     , chunkCount{ 0 }
+    , chunkSize{ initialChunkSize }
     , chunks{ nullptr }
 {
     memset(freeList, 0, sizeof(freeList));
@@ -79,9 +79,11 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
 
     if (freeList[index] == nullptr)
     {
-        Block* blocks = (Block*)salloc::Alloc(chunk_size);
+        chunkSize += chunkSize / 2;
+
+        Block* blocks = (Block*)salloc::Alloc(chunkSize);
         size_t blockSize = block_sizes[index];
-        size_t blockCapacity = chunk_size / blockSize;
+        size_t blockCapacity = chunkSize / blockSize;
 
         // Build a linked list for the free list.
         for (size_t i = 0; i < blockCapacity - 1; ++i)
@@ -94,6 +96,7 @@ void* PredefinedBlockAllocator::Allocate(size_t size)
         last->next = nullptr;
 
         Chunk* newChunk = (Chunk*)salloc::Alloc(sizeof(Chunk));
+        newChunk->capacity = blockCapacity;
         newChunk->blockSize = blockSize;
         newChunk->blocks = blocks;
         newChunk->next = chunks;
@@ -136,13 +139,14 @@ void PredefinedBlockAllocator::Free(void* p, size_t size)
     Chunk* chunk = chunks;
     while (chunk)
     {
+        size_t currentChunkSize = chunk->blockSize * chunk->capacity;
         if (chunk->blockSize != blockSize)
         {
-            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + chunk_size <= (char*)p);
+            assert((char*)p + blockSize <= (char*)chunk->blocks || (char*)chunk->blocks + currentChunkSize <= (char*)p);
         }
         else
         {
-            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + chunk_size))
+            if (((char*)chunk->blocks <= (char*)p && (char*)p + blockSize <= (char*)chunk->blocks + currentChunkSize))
             {
                 found = true;
                 break;
