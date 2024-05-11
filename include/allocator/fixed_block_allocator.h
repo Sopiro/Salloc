@@ -1,10 +1,12 @@
 #pragma once
 
-#include <assert.h>
-#include <cstring>
+#include "allocator.h"
+
+namespace salloc
+{
 
 template <size_t blockSize>
-class FixedBlockAllocator
+class FixedBlockAllocator : public Allocator
 {
 public:
     FixedBlockAllocator(size_t initialBlockCapacity = 64)
@@ -21,8 +23,15 @@ public:
         Clear();
     }
 
-    void* Allocate()
+    void* Allocate(size_t size = blockSize) override
     {
+        assert(size == blockSize);
+
+        if (size > blockSize)
+        {
+            return malloc(size);
+        }
+
         if (freeList == nullptr)
         {
             assert(blockCount == 0 || blockCapacity == blockCount / chunkCount);
@@ -59,9 +68,15 @@ public:
         return block;
     }
 
-    void Free(void* p)
+    void Free(void* p, size_t size = blockSize) override
     {
         assert(0 < blockCount && 0 < chunkCount);
+
+        if (size > blockSize)
+        {
+            free(p);
+            return;
+        }
 
 #if defined(_DEBUG)
         // Verify the memory address and size is valid.
@@ -87,7 +102,7 @@ public:
         --blockCount;
     }
 
-    void Clear()
+    void Clear() override
     {
         Chunk* chunk = chunks;
         while (chunk)
@@ -119,3 +134,5 @@ private:
     Chunk* chunks;
     Block* freeList;
 };
+
+} // namespace salloc

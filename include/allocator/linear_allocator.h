@@ -2,6 +2,9 @@
 
 #include "allocator.h"
 
+namespace salloc
+{
+
 // You muse nest allocate/free pairs
 class LinearAllocator : public Allocator
 {
@@ -53,3 +56,5 @@ inline size_t LinearAllocator::GetMaxAllocation() const
 {
     return maxAllocation;
 }
+
+} // namespace salloc

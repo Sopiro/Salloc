@@ -2,6 +2,9 @@
 
 #include "allocator.h"
 
+namespace salloc
+{
+
 // Stack allocator used for transient, predictable allocations.
 // You muse nest allocate/free pairs
 class StackAllocator : public Allocator
@@ -47,3 +50,5 @@ inline size_t StackAllocator::GetMaxAllocation() const
 {
     return maxAllocation;
 }
+
+} // namespace salloc

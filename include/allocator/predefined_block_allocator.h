@@ -2,6 +2,9 @@
 
 #include "allocator.h"
 
+namespace salloc
+{
+
 class PredefinedBlockAllocator : public Allocator
 {
 public:
@@ -34,3 +37,5 @@ inline size_t PredefinedBlockAllocator::GetChunkCount() const
 {
     return chunkCount;
 }
+
+} // namespace salloc

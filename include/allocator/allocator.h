@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <cstring>
 
+namespace salloc
+{
+
 struct Block
 {
     Block* next;
@@ -27,3 +30,5 @@ public:
     virtual void Free(void* p, size_t size) = 0;
     virtual void Clear() = 0;
 };
+
+} // namespace salloc

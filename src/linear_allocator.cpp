@@ -1,5 +1,8 @@
 #include "allocator/linear_allocator.h"
 
+namespace salloc
+{
+
 LinearAllocator::LinearAllocator(size_t initialCapacity)
     : entryCount{ 0 }
     , entryCapacity{ 32 }
@@ -109,3 +112,5 @@ void LinearAllocator::Clear()
     allocation = 0;
     maxAllocation = 0;
 }
+
+} // namespace salloc

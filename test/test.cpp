@@ -7,6 +7,8 @@
 #include "predefined_block_allocator.h"
 #include "stack_allocator.h"
 
+using namespace salloc;
+
 struct Vec2
 {
     int x, y;

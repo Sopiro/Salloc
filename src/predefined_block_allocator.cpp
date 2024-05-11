@@ -1,5 +1,8 @@
 #include "allocator/predefined_block_allocator.h"
 
+namespace salloc
+{
+
 // Predefined block sizes
 static constexpr size_t block_sizes[PredefinedBlockAllocator::block_size_count] = {
     16,  // 0
@@ -174,3 +177,5 @@ void PredefinedBlockAllocator::Clear()
     chunks = nullptr;
     memset(freeList, 0, sizeof(freeList));
 }
+
+} // namespace salloc

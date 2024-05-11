@@ -1,5 +1,8 @@
 #include "allocator/block_allocator.h"
 
+namespace salloc
+{
+
 BlockAllocator::BlockAllocator(size_t initialChunkSize)
     : blockCount{ 0 }
     , chunkCount{ 0 }
@@ -180,3 +183,5 @@ size_t BlockAllocator::GetChunkSize(size_t size) const
 
     return chunkSizes[index];
 }
+
+} // namespace salloc

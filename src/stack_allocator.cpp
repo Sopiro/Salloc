@@ -1,5 +1,8 @@
 #include "allocator/stack_allocator.h"
 
+namespace salloc
+{
+
 StackAllocator::StackAllocator()
     : index{ 0 }
     , allocation{ 0 }
@@ -73,3 +76,5 @@ void StackAllocator::Clear()
     maxAllocation = 0;
     entryCount = 0;
 }
+
+} // namespace salloc
