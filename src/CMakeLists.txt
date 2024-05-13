@@ -7,7 +7,6 @@ set(HEADER_FILES
     ../include/salloc/allocator.h
 )
 set(SOURCE_FILES
-    stack_allocator.cpp
     linear_allocator.cpp
     predefined_block_allocator.cpp
     block_allocator.cpp

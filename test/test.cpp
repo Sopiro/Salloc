@@ -24,15 +24,17 @@ TEST_CASE("Allocators")
 
 TEST_CASE("Stack allocator")
 {
-    StackAllocator sa;
+    constexpr size_t stackSize = 100 * 1024;
+    constexpr size_t maxStackEntries = 32;
+    StackAllocator<stackSize, maxStackEntries> sa;
 
-    for (size_t i = 1; i <= StackAllocator::max_stack_entries; i++)
+    for (size_t i = 1; i <= maxStackEntries; i++)
     {
         sa.Allocate(i);
     }
 
     REQUIRE_EQ(sa.GetAllocation(), sa.GetMaxAllocation());
-    REQUIRE_EQ(sa.GetAllocation(), (1 + StackAllocator::max_stack_entries) * StackAllocator::max_stack_entries / 2);
+    REQUIRE_EQ(sa.GetAllocation(), (1 + maxStackEntries) * maxStackEntries / 2);
 
     sa.Clear();
 }

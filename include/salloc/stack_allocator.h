@@ -7,12 +7,10 @@ namespace salloc
 
 // Stack allocator is used for transient, predictable allocations.
 // You must nest allocate/free pairs
+template <size_t stackSize = 100 * 1024, size_t maxStackEntries = 32>
 class StackAllocator : public Allocator
 {
 public:
-    static constexpr inline size_t stack_size = 100 * 1024;
-    static constexpr inline size_t max_stack_entries = 32;
-
     StackAllocator();
     ~StackAllocator();
 
@@ -31,22 +29,104 @@ private:
         bool mallocUsed;
     };
 
-    char stack[stack_size];
+    char stack[stackSize];
     size_t index;
 
     size_t allocation;
     size_t maxAllocation;
 
-    StackEntry entries[max_stack_entries];
+    StackEntry entries[maxStackEntries];
     size_t entryCount;
 };
 
-inline size_t StackAllocator::GetAllocation() const
+template <size_t stackSize, size_t maxStackEntries>
+StackAllocator<stackSize, maxStackEntries>::StackAllocator()
+    : index{ 0 }
+    , allocation{ 0 }
+    , maxAllocation{ 0 }
+    , entryCount{ 0 }
+{
+}
+
+template <size_t stackSize, size_t maxStackEntries>
+StackAllocator<stackSize, maxStackEntries>::~StackAllocator()
+{
+    assert(index == 0 && entryCount == 0);
+}
+
+template <size_t stackSize, size_t maxStackEntries>
+void* StackAllocator<stackSize, maxStackEntries>::Allocate(size_t size)
+{
+    assert(entryCount < maxStackEntries && "Increase the maxStackEntries");
+
+    StackEntry* entry = entries + entryCount;
+    entry->size = size;
+
+    if (index + size > stackSize)
+    {
+        entry->data = (char*)salloc::Alloc(size);
+        entry->mallocUsed = true;
+    }
+    else
+    {
+        entry->data = stack + index;
+        entry->mallocUsed = false;
+        index += size;
+    }
+
+    allocation += size;
+    if (allocation > maxAllocation)
+    {
+        maxAllocation = allocation;
+    }
+
+    ++entryCount;
+
+    return entry->data;
+}
+
+template <size_t stackSize, size_t maxStackEntries>
+void StackAllocator<stackSize, maxStackEntries>::Free(void* p, size_t size)
+{
+    sallocNotUsed(size);
+    assert(entryCount > 0);
+
+    StackEntry* entry = entries + (entryCount - 1);
+    assert(entry->data == p);
+    assert(entry->size == size);
+
+    if (entry->mallocUsed)
+    {
+        salloc::Free(p);
+    }
+    else
+    {
+        index -= entry->size;
+    }
+
+    allocation -= entry->size;
+    --entryCount;
+
+    p = nullptr;
+}
+
+template <size_t stackSize, size_t maxStackEntries>
+void StackAllocator<stackSize, maxStackEntries>::Clear()
+{
+    index = 0;
+    allocation = 0;
+    maxAllocation = 0;
+    entryCount = 0;
+}
+
+template <size_t stackSize, size_t maxStackEntries>
+size_t StackAllocator<stackSize, maxStackEntries>::GetAllocation() const
 {
     return allocation;
 }
 
-inline size_t StackAllocator::GetMaxAllocation() const
+template <size_t stackSize, size_t maxStackEntries>
+size_t StackAllocator<stackSize, maxStackEntries>::GetMaxAllocation() const
 {
     return maxAllocation;
 }
