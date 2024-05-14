@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10)
 
-option(BUILD_UNIT_TESTS "Build unit tests" ON)
+option(SALLOC_BUILD_UNIT_TESTS "Build unit tests" ON)
 
 project(salloc LANGUAGES CXX VERSION 0.0.1)
 
@@ -18,6 +18,6 @@ endif()
 
 add_subdirectory(src)
 
-if(BUILD_UNIT_TESTS)
+if(SALLOC_BUILD_UNIT_TESTS)
     add_subdirectory(test)
 endif()
