@@ -9,11 +9,6 @@
 
 using namespace salloc;
 
-struct Vec2
-{
-    int x, y;
-};
-
 TEST_CASE("Allocators")
 {
 #if defined(_WIN32) && defined(_DEBUG)
@@ -62,6 +57,11 @@ TEST_CASE("Linear allocator")
 
 TEST_CASE("Fixed block allocator")
 {
+    struct Vec2
+    {
+        int x, y;
+    };
+
     FixedBlockAllocator<sizeof(Vec2)> fba;
     const int count = 100;
     Vec2* k[count];
@@ -136,7 +136,7 @@ TEST_CASE("Block allocator")
         ba.Allocate(i);
     }
 
-    REQUIRE_EQ(ba.GetChunkCount(), BlockAllocator::max_block_size / BlockAllocator::block_unit);
+    REQUIRE_EQ(ba.GetChunkCount(), BlockAllocator::block_size_count);
     REQUIRE_EQ(ba.GetBlockCount(), count);
 
     size_t chunkSize1 = ba.GetChunkSize(1);
@@ -161,4 +161,42 @@ TEST_CASE("Block allocator")
     REQUIRE_EQ(ba.GetChunkSize(8), chunkSize1 + chunkSize1 / 2);
 
     REQUIRE_EQ(ba.GetChunkSize(9), chunkSize1);
+}
+
+TEST_CASE("New Delete")
+{
+    BlockAllocator ba;
+
+    struct Vec2
+    {
+        int x, y;
+
+        Vec2(int x, int y)
+            : x{ x }
+            , y{ y }
+        {
+            std::cout << "Vec2 created: " << x << ", " << y << std::endl;
+        }
+
+        ~Vec2()
+        {
+            std::cout << "Vec2 deleted: " << x << ", " << y << std::endl;
+        }
+    };
+
+    Vec2* v = ba.New<Vec2>(12, 34);
+    v->x = 56;
+    v->y = 78;
+
+    REQUIRE_EQ(ba.GetBlockCount(), 1);
+    REQUIRE_EQ(ba.GetChunkCount(), 1);
+
+    ba.Delete(v);
+
+    REQUIRE_EQ(ba.GetBlockCount(), 0);
+    REQUIRE_EQ(ba.GetChunkCount(), 1);
+
+    ba.Clear();
+
+    REQUIRE_EQ(ba.GetChunkCount(), 0);
 }
