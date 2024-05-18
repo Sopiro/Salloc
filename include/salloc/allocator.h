@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #define sallocNotUsed(x) ((void)(x));
 
