@@ -1,4 +1,4 @@
-# Salloc
+# salloc
 
 Specialized memory allocators in C++
 
